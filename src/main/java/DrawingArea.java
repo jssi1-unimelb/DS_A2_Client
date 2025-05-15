@@ -1,3 +1,6 @@
+import DrawObjects.*;
+import DrawObjects.Rectangle;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -15,8 +18,12 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener {
     private final Graphics2D g2D;
     private String currentText;
     private boolean isAddingText;
+    private ArrayList<Drawable> history = new ArrayList<>();
 
-    public DrawingArea(int size, ToolsArea tools) {
+    private WhiteBoardClient client;
+
+    public DrawingArea(int size, ToolsArea tools, WhiteBoardClient client) {
+        this.client = client;
         tools.addListener(this);
         addKeyListener(this);
         this.currentText = "";
@@ -120,6 +127,7 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(canvas, 0, 0, null);
+        System.out.println(canvas);
     }
 
     @Override
@@ -150,18 +158,17 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener {
     private void drawLine() {
         Coord start = points.getFirst();
         Coord end = points.get(1);
-        g2D.setColor(tools.colour);
-        g2D.setStroke(new BasicStroke(tools.size));
-        g2D.drawLine(start.x, start.y, end.x, end.y);
+        Line line = new Line(start, end, tools.colour, tools.size);
+        line.draw(g2D);
+        history.add(line);
     }
 
     private void drawTriangle() {
         int[] xPoints = points.stream().mapToInt(Coord::getX).toArray();
         int[] yPoints = points.stream().mapToInt(Coord::getY).toArray();
-        int nPoints = 3;
-        g2D.setColor(tools.colour);
-        g2D.setStroke(new BasicStroke(tools.size));
-        g2D.drawPolygon(xPoints, yPoints, nPoints);
+        Triangle triangle = new Triangle(xPoints, yPoints, tools.colour, tools.size);
+        triangle.draw(g2D);
+        history.add(triangle);
     }
 
     private void drawOval() {
@@ -171,9 +178,9 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener {
         int width = Math.abs(p1.x - p2.x) * 2;
         int height = Math.abs(p1.y - p3.y) * 2;
         Coord start = new Coord(p1.x - width / 2, p1.y - height / 2);
-        g2D.setColor(tools.colour);
-        g2D.setStroke(new BasicStroke(tools.size));
-        g2D.drawOval(start.x, start.y, width, height);
+        Oval oval = new Oval(start, width, height, tools.colour, tools.size);
+        oval.draw(g2D);
+        history.add(oval);
     }
 
     private void drawRectangle() {
@@ -182,27 +189,25 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener {
         int width = end.x - start.x;
         int height = end.y - start.y;
         Coord point = getTopLeftCorner(start, end, width, height);
-        g2D.setColor(tools.colour);
-        g2D.setStroke(new BasicStroke(tools.size));
-        g2D.drawRect(point.x, point.y, Math.abs(width), Math.abs(height));
+        Rectangle rect = new Rectangle(point, Math.abs(width), Math.abs(height), tools.colour, tools.size);
+        rect.draw(g2D);
+        history.add(rect);
     }
 
     private void drawCircleOnCursor() {
         Coord curr = points.getLast();
         Coord start = new Coord(curr.x - tools.size / 2, curr.y - tools.size / 2);
-        if(tools.tool.equals("erase")) {
-            g2D.setColor(Color.WHITE);
-        } else {
-            g2D.setColor(tools.colour);
-        }
-
-        g2D.setStroke(new BasicStroke(tools.size));
-        g2D.fillOval(start.x, start.y, tools.size, tools.size);
+        Color colour = tools.tool.equals("erase") ? Color.WHITE : tools.colour;
+        CircleOnCursor circle = new CircleOnCursor(start, colour, tools.size);
+        circle.draw(g2D);
+        history.add(circle);
 
         // Line interpolation
         if (points.size() > 1) {
             Coord prev = points.get(points.size() - 2);
-            g2D.drawLine(prev.x, prev.y, curr.x, curr.y);
+            Line line = new Line(prev, curr, colour, tools.size);
+            line.draw(g2D);
+            history.add(line);
         }
     }
 
@@ -226,6 +231,12 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener {
 
         if(tools.tool.equals("text") && isAddingText) {
             if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+
+                // Add text to history
+                Text text = new Text(points.getFirst(), currentText, tools.colour, tools.size);
+                text.draw(g2D);
+                history.add(text);
+
                 isAddingText = false;
                 currentText = ""; // clear string
                 points.clear();

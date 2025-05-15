@@ -7,8 +7,9 @@ public class WhiteboardGUI extends JFrame {
     JPanel userInterface;
     DrawingArea drawingArea;
     ToolsArea toolsArea;
+    ConnectionsArea connectionsArea;
 
-    public WhiteboardGUI(){
+    public WhiteboardGUI(WhiteBoardClient client){
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         userInterface = new JPanel(new GridBagLayout());
@@ -16,10 +17,12 @@ public class WhiteboardGUI extends JFrame {
         userInterface.setBorder(topBorder);
 
         int size = 600;
-        int toolsAreaWidth = 200;
-        toolsArea = new ToolsArea(toolsAreaWidth, size);
-        drawingArea = new DrawingArea(size, toolsArea);
+        int sidePanelWidth = 200;
+        toolsArea = new ToolsArea(sidePanelWidth, size);
+        drawingArea = new DrawingArea(size, toolsArea, client);
+        connectionsArea = new ConnectionsArea(sidePanelWidth, size, client);
 
+        userInterface.add(connectionsArea);
         userInterface.add(drawingArea);
         userInterface.add(toolsArea);
 
