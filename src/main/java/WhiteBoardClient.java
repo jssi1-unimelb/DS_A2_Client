@@ -1,10 +1,17 @@
+import DrawObjects.Drawable;
+import Requests.ConnectionRequest;
+import Requests.WhiteboardChangeRequest;
+import Responses.User;
+
+import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
-public class WhiteBoardClient {
+public class WhiteBoardClient implements ClientEventPublisher {
     private Socket client;
     protected DataInputStream dis;
     private DataOutputStream dos;
@@ -12,7 +19,11 @@ public class WhiteBoardClient {
     private ServerReader serverReader = null;
     private final int port;
     private String username;
-    private boolean liveConnection = false;
+//    private ConsoleUpdateListener listener;
+    private ConsoleUpdateListener consoleUpdateListener;
+    private WhiteboardUpdateListener whiteboardUpdateListener;
+    private UsersListUpdateListener usersListUpdateListener;
+    public boolean liveConnection = false;
     //    private ServerReader serverReader = null;
 
     public WhiteBoardClient(String host , int port, String username) {
@@ -38,32 +49,81 @@ public class WhiteBoardClient {
                 notifyAll(); // Wake up existing server reader
             }
 
-            // Upon establishing connection, send username to server
-            dos.writeUTF(username);
+            updateConsole("Connection established, waiting for approval from manager");
+
+            // Send request to join the whiteboard
+            ConnectionRequest connect = new ConnectionRequest(username);
+            String connectReq = GsonUtil.gson.toJson(connect);
+            dos.writeUTF(connectReq);
 
         } catch(UnknownHostException uhe) { // Tried connecting to a server that doesn't exist
-            System.out.println("Error: cannot connect, server does not exist");
+            updateConsole("Error: Specified server does not exist");
             liveConnection = false;
         } catch(IOException ioe) {
-            System.out.println("Error: connection refused, please try again later");
+            updateConsole("Error: Connection denied, please try again later");
             liveConnection = false;
         }
-    }
-
-    public void sendConnectionRequest() {
-        // Bruh
     }
 
     public void sendDisconnectRequest() {
-        // Crocodilo Bombodilo
-        try {
-            client.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(liveConnection) {
+            try {
+                client.close();
+                updateConsole("Connection Closed");
+            } catch (IOException e) {
+                updateConsole("Some shit happened");
+                throw new RuntimeException(e);
+            } catch (NullPointerException e) {
+                updateConsole("null shit happened");
+                throw new RuntimeException(e);
+            }
+        } else {
+            updateConsole("Error: You are not connected to a server");
         }
     }
 
-    public void sendWhiteboardUpdateRequest() {
-        // Tung tung tung tung tung sahuuur
+    // Send a whiteboard update to the server
+    public void sendWhiteboardUpdateRequest(Drawable obj) {
+        if(liveConnection) {
+            try {
+                WhiteboardChangeRequest wbUpdate = new WhiteboardChangeRequest(obj);
+                String wbUpdateRequest = GsonUtil.gson.toJson(wbUpdate);
+                dos.writeUTF(wbUpdateRequest);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            updateConsole("Error: You are not connected to a server");
+        }
+    }
+
+    @Override
+    public void addConsoleUpdateListener(ConsoleUpdateListener listener) {
+        this.consoleUpdateListener = listener;
+    }
+
+    @Override
+    public void updateConsole(String msg) {
+        consoleUpdateListener.updateConsole(msg);
+    }
+
+    @Override
+    public void addWhiteboardUpdateListener(WhiteboardUpdateListener listener) {
+        this.whiteboardUpdateListener = listener;
+    }
+
+    @Override
+    public void updateWhiteboard(BufferedImage whiteboard) {
+        whiteboardUpdateListener.updateWhiteboard(whiteboard);
+    }
+
+    @Override
+    public void addUserListUpdateListener(UsersListUpdateListener listener) {
+        this.usersListUpdateListener = listener;
+    }
+
+    @Override
+    public void updateUsersList(ArrayList<User> users) {
+        usersListUpdateListener.updateUsersList(users);
     }
 }

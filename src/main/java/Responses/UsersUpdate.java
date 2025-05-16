@@ -1,5 +1,7 @@
 package Responses;
 
+import java.util.ArrayList;
+
 public class UsersUpdate {
-    public User[] users;
+    public ArrayList<User> users;
 }

@@ -2,13 +2,14 @@ package DrawObjects;
 
 import java.awt.*;
 
-public class Triangle implements Drawable {
+public class Triangle extends Shape implements Drawable {
     private final int[] xPoints;
     private final int[] yPoints;
-    private final Color colour;
+    public final Color colour;
     private final int size;
 
     public Triangle(int[] xPoints, int[] yPoints, Color colour, int size) {
+        super("triangle");
         this.xPoints = xPoints;
         this.yPoints = yPoints;
         this.colour = colour;

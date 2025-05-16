@@ -2,7 +2,7 @@ package DrawObjects;
 
 import java.awt.*;
 
-public class Rectangle implements Drawable {
+public class Rectangle extends Shape implements Drawable {
     private final Coord start;
     private final int width;
     private final int height;
@@ -10,6 +10,7 @@ public class Rectangle implements Drawable {
     private final int size;
 
     public Rectangle(Coord start, int width, int height, Color colour, int size) {
+        super("rectangle");
         this.start = start;
         this.width = width;
         this.height = height;

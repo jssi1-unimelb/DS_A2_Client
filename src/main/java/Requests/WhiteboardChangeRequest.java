@@ -1,12 +1,14 @@
 package Requests;
 
+import DrawObjects.Drawable;
+
 import java.awt.image.BufferedImage;
 
 public class WhiteboardChangeRequest extends Request {
-    BufferedImage whiteboard;
+    Drawable obj;
 
-    public WhiteboardChangeRequest(BufferedImage whiteboard) {
+    public WhiteboardChangeRequest(Drawable obj) {
         super("whiteboard");
-        this.whiteboard = whiteboard;
+        this.obj = obj;
     }
 }

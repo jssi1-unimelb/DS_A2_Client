@@ -2,7 +2,7 @@ package DrawObjects;
 
 import java.awt.*;
 
-public class Oval implements Drawable {
+public class Oval extends Shape implements Drawable {
     private final Coord start;
     private final int width;
     private final int height;
@@ -10,6 +10,7 @@ public class Oval implements Drawable {
     private final int size;
 
     public Oval(Coord start, int width, int height, Color colour, int size) {
+        super("oval");
         this.start = start;
         this.width = width;
         this.height = height;

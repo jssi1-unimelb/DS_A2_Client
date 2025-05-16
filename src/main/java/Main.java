@@ -10,10 +10,6 @@ public class Main {
                 String username = args[2];
 
                 WhiteBoardClient client = new WhiteBoardClient(host, port, username);
-
-                // Temporary until I setup the rest of the client app
-                client.connectToServer();
-
                 WhiteboardGUI gui = new WhiteboardGUI(client);
             }
         });

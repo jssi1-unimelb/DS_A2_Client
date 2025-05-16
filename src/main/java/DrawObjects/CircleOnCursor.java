@@ -2,12 +2,13 @@ package DrawObjects;
 
 import java.awt.*;
 
-public class CircleOnCursor implements Drawable {
+public class CircleOnCursor extends Shape implements Drawable {
     private final Coord point;
     private final int size;
     private Color colour;
 
     public CircleOnCursor(Coord point, Color colour, int size) {
+        super("circle");
         this.point = point;
         this.colour = colour;
         this.size = size;
