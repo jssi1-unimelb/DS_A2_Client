@@ -6,12 +6,14 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class ConnectionsArea extends JPanel implements UsersListUpdateListener {
-    private WhiteBoardClient client;
-    private ArrayList<User> users;
     private JPanel usersPanel;
+    private String role;
+    private Popup popup;
+    private WhiteBoardClient client;
 
-    public ConnectionsArea(int width, int height, WhiteBoardClient client) {
+    public ConnectionsArea(int width, int height, WhiteBoardClient client, String role) {
         this.client = client;
+        this.role = role;
         this.setPreferredSize(new Dimension(width, height));
         Border rightBorder = BorderFactory.createMatteBorder(0, 0, 0, 1, Color.BLACK);
         this.setBorder(rightBorder);
@@ -42,7 +44,7 @@ public class ConnectionsArea extends JPanel implements UsersListUpdateListener {
         disconnectBtn.setFont(new Font("SansSerif", Font.BOLD, 16));
         disconnectBtn.setFocusPainted(false);
         disconnectBtn.addActionListener(e -> {
-            client.sendDisconnectRequest();
+            client.disconnect();
         });
         this.add(disconnectBtn, gbc);
 
@@ -71,16 +73,27 @@ public class ConnectionsArea extends JPanel implements UsersListUpdateListener {
 
     @Override
     public void updateUsersList(ArrayList<User> users) {
-        this.users = users;
         usersPanel.removeAll(); // Clear users
         for(User user: users) {
             String name = user.username;
             String truncated = name.length() >= 24 ? name.substring(0,24) + "..." : name;
-            JLabel userLabel = new JLabel(truncated);
-            userLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
-            usersPanel.add(userLabel);
-            usersPanel.add(Box.createVerticalStrut(5));
+            if(role.equals("manager")) { // Buttons so manager can kick
+                JButton userButton = new JButton();
+                userButton.setFont(new Font("SansSerif", Font.BOLD, 12));
+                userButton.setText(truncated);
+                userButton.addActionListener(e -> {
+                    String title = "Kick User";
+                    popup = new Popup(title, user, "kick", client);
+                });
+                usersPanel.add(userButton);
+            } else { // Users only see names
+                JLabel userLabel = new JLabel(truncated);
+                userLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
+                usersPanel.add(userLabel);
+                usersPanel.add(Box.createVerticalStrut(5));
+            }
         }
         revalidate();
+        repaint();
     }
 }

@@ -10,4 +10,6 @@ public interface ClientEventPublisher {
     void updateWhiteboard(BufferedImage whiteboard);
     void addUserListUpdateListener(UsersListUpdateListener listener);
     void updateUsersList(ArrayList<User> users);
+    void addJoinListener(JoinRequestListener listener);
+    void notifyJoinListener(User user);
 }

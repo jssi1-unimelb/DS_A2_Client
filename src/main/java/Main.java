@@ -6,11 +6,13 @@ public class Main {
             @Override
             public void run() {
                 String host = args[0];
-                Integer port = Integer.parseInt(args[1]);
+                int port = Integer.parseInt(args[1]);
                 String username = args[2];
+                String role = args[3];
 
-                WhiteBoardClient client = new WhiteBoardClient(host, port, username);
-                WhiteboardGUI gui = new WhiteboardGUI(client);
+                WhiteBoardClient client = new WhiteBoardClient(host, port, username, role);
+                WhiteboardGUI gui = new WhiteboardGUI(client, role);
+                client.addJoinListener(gui);
             }
         });
 
