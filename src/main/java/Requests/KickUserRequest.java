@@ -1,6 +1,6 @@
 package Requests;
 
-import Responses.User;
+import Main.User;
 
 public class KickUserRequest extends Request {
     User user;

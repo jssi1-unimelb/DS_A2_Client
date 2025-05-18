@@ -1,6 +1,7 @@
 package DrawObjects;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Text extends Shape implements Drawable {
     private final Coord start;
@@ -16,10 +17,12 @@ public class Text extends Shape implements Drawable {
         this.size = size;
     }
 
-    public void draw(Graphics2D g2D) {
+    public void draw(BufferedImage image) {
+        Graphics2D g2D = image.createGraphics();
         g2D.setColor(colour);
         g2D.setFont(new Font("Dialog", Font.PLAIN, size));
         g2D.setStroke(new BasicStroke(size));
         g2D.drawString(text, start.x, start.y);
+        g2D.dispose();
     }
 }

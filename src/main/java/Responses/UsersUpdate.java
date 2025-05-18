@@ -1,5 +1,7 @@
 package Responses;
 
+import Main.User;
+
 import java.util.ArrayList;
 
 public class UsersUpdate {

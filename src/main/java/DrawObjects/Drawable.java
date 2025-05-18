@@ -1,7 +1,8 @@
 package DrawObjects;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public interface Drawable {
-    void draw(Graphics2D g2D);
+    void draw(BufferedImage image);
 }

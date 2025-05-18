@@ -1,6 +1,6 @@
 package Responses;
 
-import Requests.UserStatusUpdate;
+import Main.User;
 
 public class UserJoinRequest extends Response {
     public User user;
