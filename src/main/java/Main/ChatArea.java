@@ -95,7 +95,8 @@ public class ChatArea extends JPanel implements ChatListener, KeyListener, Actio
 
     @Override
     public void updateChat(ChatItem item) {
-        outputArea.append(item.msg + "\n");
+        String msg = item.username + ": " + item.msg;
+        outputArea.append(msg + "\n");
         outputArea.setCaretPosition(outputArea.getDocument().getLength());
     }
 
@@ -110,7 +111,7 @@ public class ChatArea extends JPanel implements ChatListener, KeyListener, Actio
     }
 
     private void sendRequest() {
-        String msg = inputField.getText().toLowerCase().trim();
+        String msg = inputField.getText().trim();
         if(!msg.isEmpty()) { // Don't process request if it is empty
             client.sendChatUpdateRequest(msg);
         }

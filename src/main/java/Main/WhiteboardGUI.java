@@ -113,6 +113,9 @@ public class WhiteboardGUI extends JFrame implements JoinRequestListener {
                     client.updateConsole("Error: You are not connected to a server");
                     return;
                 }
+                if(!drawingArea.isOpen) {
+                    client.updateConsole("Error: Whiteboard has already been closed");
+                }
 
                 // Close image, user shouldn't be able to update the whiteboard
                 currentFile = null;

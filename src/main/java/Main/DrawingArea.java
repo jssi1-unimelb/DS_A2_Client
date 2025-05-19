@@ -13,16 +13,15 @@ import java.util.Collections;
 public class DrawingArea extends JPanel implements ToolListener, KeyListener, WhiteboardUpdateListener {
 
     public BufferedImage whiteboard;
+    public boolean isOpen = true;
     private final ToolsArea tools;
     private int clickCount;
     private int toolClickLimit;
     private final ArrayList<Coord> points = new ArrayList<>();
     private String currentText;
-    private boolean isAddingText;
     private FreeDraw freeDraw;
     private boolean inFreeDraw = false;
     private final WhiteBoardClient client;
-    private boolean editable = true;
 
     public DrawingArea(int width, int height, ToolsArea tools, WhiteBoardClient client) {
         this.freeDraw = null;
@@ -30,8 +29,14 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener, Wh
         tools.addListener(this);
         addKeyListener(this);
         this.currentText = "";
-        this.isAddingText = false;
         this.whiteboard = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        // Whiteboard has white background
+        Graphics g2D = whiteboard.createGraphics();
+        g2D.setColor(Color.WHITE);
+        g2D.fillRect(0, 0, width, height);
+        g2D.dispose();
+
         this.tools = tools;
         this.clickCount = 0;
         this.toolClickLimit = 2; // Default tool is line
@@ -41,28 +46,33 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener, Wh
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if(client.liveConnection && editable) {
-                    super.mouseClicked(e);
-                    requestFocusInWindow(); // Focus this component to receive keyboard input
-                    Coord point = new Coord(e.getX(), e.getY());
-                    points.add(point);
-                    clickCount++;
-                    if (clickCount == toolClickLimit) {
-                        clickCount = 0;
-                        drawShape();
-                        if (!tools.tool.equals("draw") && !tools.tool.equals("erase") && !tools.tool.equals("text")) {
-                            points.clear();
-                        }
-                        repaint();
-                    }
-                } else {
+                if(!isOpen) {
+                    client.updateConsole("Error: Whiteboard has been closed");
+                    return;
+                }
+                if(!client.liveConnection) {
                     client.updateConsole("Error: You are not connected to a server");
+                    return;
+                }
+
+                super.mouseClicked(e);
+                requestFocusInWindow(); // Focus this component to receive keyboard input
+                Coord point = new Coord(e.getX(), e.getY());
+                points.add(point);
+                clickCount++;
+                if (clickCount == toolClickLimit) {
+                    clickCount = 0;
+                    drawShape();
+                    if (!tools.tool.equals("draw") && !tools.tool.equals("erase") && !tools.tool.equals("text")) {
+                        points.clear();
+                    }
+                    repaint();
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if(client.liveConnection && editable) {
+                if(client.liveConnection && isOpen) {
                     if (inFreeDraw && (tools.tool.equals("draw") || tools.tool.equals("erase"))) {
                         points.clear();
                         client.sendWhiteboardUpdateRequest(freeDraw);
@@ -74,7 +84,7 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener, Wh
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if(client.liveConnection && editable) {
+                if(client.liveConnection && isOpen) {
                     if (inFreeDraw && (tools.tool.equals("draw") || tools.tool.equals("erase"))) {
                         points.clear();
                         client.sendWhiteboardUpdateRequest(freeDraw);
@@ -88,7 +98,7 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener, Wh
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if(client.liveConnection && editable) {
+                if(client.liveConnection && isOpen) {
                     super.mouseDragged(e);
                     switch (tools.tool) {
                         case "draw":
@@ -104,8 +114,8 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener, Wh
     }
 
     public void closeWhiteboard() {
-        editable = false;
         updateWhiteboard(new BufferedImage(700, 600, BufferedImage.TYPE_INT_ARGB)); // Clear the whiteboard
+        isOpen = false;
     }
 
     // Helper function that creates the shape to drawn
@@ -244,12 +254,10 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener, Wh
     private void drawText() {
         Coord start = points.getFirst();
         Graphics2D g2D = whiteboard.createGraphics();
-        if(!isAddingText) {
-            isAddingText = true;
-            g2D.setColor(tools.colour);
-            g2D.setFont(new Font("Dialog", Font.PLAIN, tools.size));
-            g2D.setStroke(new BasicStroke(tools.size));
-        }
+
+        g2D.setColor(tools.colour);
+        g2D.setFont(new Font("Dialog", Font.PLAIN, tools.size));
+        g2D.setStroke(new BasicStroke(tools.size));
         g2D.drawString(currentText, start.x, start.y);
         g2D.dispose();
     }
@@ -257,10 +265,10 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener, Wh
     @Override
     public void keyPressed(KeyEvent e) {
         ArrayList<Integer> invalidKeyCodes = new ArrayList<>();
-        Collections.addAll(invalidKeyCodes, 12, 16, 17, 18, 19, 20, 33, 34, 35, 36, 37, 38, 39, 40, 112, 113, 114, 115,
+        Collections.addAll(invalidKeyCodes, 8, 12, 16, 17, 18, 19, 20, 33, 34, 35, 36, 37, 38, 39, 40, 112, 113, 114, 115,
                 116, 117, 118, 119, 120, 121, 122, 123, 127, 144, 155, 524, 525);
 
-        if(tools.tool.equals("text") && isAddingText) {
+        if(tools.tool.equals("text")) {
             if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 
                 // Add text to history
@@ -268,18 +276,18 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener, Wh
                 text.draw(whiteboard);
                 client.sendWhiteboardUpdateRequest(text);
 
-                isAddingText = false;
                 currentText = ""; // clear string
                 points.clear();
             } else {
                 if((!invalidKeyCodes.contains(e.getKeyCode()))) { // Valid key
-                    if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-                        if(!currentText.isEmpty()) {
-                            currentText = currentText.substring(0, currentText.length() - 1);
-                        }
-                    } else { // Valid key
-                        currentText += e.getKeyChar();
-                    }
+//                    if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+//                        if(!currentText.isEmpty()) {
+//                            currentText = currentText.substring(0, currentText.length() - 1);
+//                        }
+//                    } else { // Valid key
+//                        currentText += e.getKeyChar();
+//                    }
+                    currentText += e.getKeyChar();
                     drawText();
                     repaint();
                 }
@@ -295,6 +303,7 @@ public class DrawingArea extends JPanel implements ToolListener, KeyListener, Wh
 
     @Override
     public void updateWhiteboard(BufferedImage whiteboard) {
+        isOpen = true;
         this.whiteboard = whiteboard;
         repaint();
     }
