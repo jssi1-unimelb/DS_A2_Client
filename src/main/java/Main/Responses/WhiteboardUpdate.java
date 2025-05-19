@@ -1,4 +1,4 @@
-package Responses;
+package Main.Responses;
 
 import java.awt.image.BufferedImage;
 

@@ -1,7 +1,7 @@
 package Main;
 
-import DrawObjects.*;
-import DrawObjects.Rectangle;
+import Main.DrawObjects.*;
+import Main.DrawObjects.Rectangle;
 
 import javax.swing.*;
 import java.awt.*;

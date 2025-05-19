@@ -1,4 +1,4 @@
-package DrawObjects;
+package Main.DrawObjects;
 
 public class Coord {
     public int x;

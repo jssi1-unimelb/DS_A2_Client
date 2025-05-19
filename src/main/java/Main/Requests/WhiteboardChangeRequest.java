@@ -1,6 +1,6 @@
-package Requests;
+package Main.Requests;
 
-import DrawObjects.Drawable;
+import Main.DrawObjects.Drawable;
 
 public class WhiteboardChangeRequest extends Request {
     Drawable obj;

@@ -1,6 +1,5 @@
-package DrawObjects;
+package Main.DrawObjects;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 

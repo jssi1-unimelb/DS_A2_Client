@@ -1,7 +1,7 @@
 package Main;
 
-import DrawObjects.Drawable;
-import Requests.*;
+import Main.DrawObjects.Drawable;
+import Main.Requests.*;
 
 import java.awt.image.BufferedImage;
 import java.io.DataInputStream;

@@ -1,4 +1,4 @@
-package DrawObjects;
+package Main.DrawObjects;
 
 public abstract class Shape {
     public String shapeType;

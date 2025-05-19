@@ -1,7 +1,6 @@
 package Main;
 
-import Requests.UpdateChatRequest;
-import Responses.*;
+import Main.Responses.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

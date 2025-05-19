@@ -1,4 +1,4 @@
-package Requests;
+package Main.Requests;
 
 public class DisconnectRequest extends Request {
     public DisconnectRequest(String role) {

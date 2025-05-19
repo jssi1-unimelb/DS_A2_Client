@@ -1,4 +1,4 @@
-package Requests;
+package Main.Requests;
 
 public class CloseWhiteboardRequest extends Request {
     public CloseWhiteboardRequest(String role) {
