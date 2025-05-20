@@ -3,7 +3,7 @@ package Main.DrawObjects;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Text extends Shape implements Drawable {
+public class Text extends Shape {
     private final Coord start;
     private final String text;
     private final Color colour;

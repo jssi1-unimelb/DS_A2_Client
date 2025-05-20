@@ -1,5 +1,7 @@
 package Main;
 
+import Main.GUI.*;
+
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 

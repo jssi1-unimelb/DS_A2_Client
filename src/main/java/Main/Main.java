@@ -1,5 +1,7 @@
 package Main;
 
+import Main.GUI.WhiteboardGUI;
+
 import javax.swing.*;
 
 public class Main {
@@ -12,7 +14,7 @@ public class Main {
                 String username = args[2];
                 String role = args[3];
 
-                WhiteBoardClient client = new WhiteBoardClient(host, port, username, role);
+                WhiteboardClient client = new WhiteboardClient(host, port, username, role);
                 WhiteboardGUI gui = new WhiteboardGUI(client, role);
                 client.addJoinListener(gui);
             }

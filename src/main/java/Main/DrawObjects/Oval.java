@@ -3,7 +3,7 @@ package Main.DrawObjects;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Oval extends Shape implements Drawable {
+public class Oval extends Shape {
     private final Coord start;
     private final int width;
     private final int height;

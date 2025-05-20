@@ -3,11 +3,11 @@ package Main.DrawObjects;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Line extends Shape implements Drawable {
-    public final Coord start;
-    public final Coord end;
-    public final Color colour;
-    public final int size;
+public class Line extends Shape {
+    private final Coord start;
+    private final Coord end;
+    private final Color colour;
+    private final int size;
 
     public Line(Coord start, Coord end, Color colour, int size) {
         super("line");

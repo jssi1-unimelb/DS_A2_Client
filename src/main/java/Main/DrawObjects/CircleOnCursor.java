@@ -3,10 +3,10 @@ package Main.DrawObjects;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class CircleOnCursor extends Shape implements Drawable {
+public class CircleOnCursor extends Shape {
     private final Coord point;
     private final int size;
-    private Color colour;
+    private final Color colour;
 
     public CircleOnCursor(Coord point, Color colour, int size) {
         super("circle");

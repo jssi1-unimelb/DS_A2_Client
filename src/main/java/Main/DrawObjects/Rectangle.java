@@ -3,7 +3,7 @@ package Main.DrawObjects;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Rectangle extends Shape implements Drawable {
+public class Rectangle extends Shape {
     private final Coord start;
     private final int width;
     private final int height;

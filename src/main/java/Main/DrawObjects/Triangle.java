@@ -3,10 +3,10 @@ package Main.DrawObjects;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Triangle extends Shape implements Drawable {
+public class Triangle extends Shape {
     private final int[] xPoints;
     private final int[] yPoints;
-    public final Color colour;
+    private final Color colour;
     private final int size;
 
     public Triangle(int[] xPoints, int[] yPoints, Color colour, int size) {

@@ -3,8 +3,8 @@ package Main.DrawObjects;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
-public class FreeDraw extends Shape implements Drawable{
-    LinkedList<Drawable> shapes;
+public class FreeDraw extends Shape {
+    private final LinkedList<Drawable> shapes;
 
     public FreeDraw() {
         super("free draw");

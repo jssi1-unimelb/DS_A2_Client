@@ -1,15 +1,16 @@
 package Main;
 
-import Main.Responses.*;
+import Main.Gson.GsonUtil;
+import Main.ServerMsg.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class ServerReader extends Thread {
-    private WhiteBoardClient client;
+    private WhiteboardClient client;
 
-    public ServerReader(WhiteBoardClient client) {
+    public ServerReader(WhiteboardClient client) {
         this.client = client;
     }
 
@@ -41,8 +42,8 @@ public class ServerReader extends Thread {
                         }
                         case "disconnect" -> { // Server closed this connection
                             // Need to convert back to disconnect response so can display custom reasons for the disconnect
-                            DisconnectResponse disconnectResponse = GsonUtil.gson.fromJson(res, DisconnectResponse.class);
-                            client.updateConsole(disconnectResponse.msg);
+                            DisconnectUpdate disconnectUpdate = GsonUtil.gson.fromJson(res, DisconnectUpdate.class);
+                            client.updateConsole(disconnectUpdate.msg);
                             client.disconnect(); // Disconnected, clean up everything
                         }
                         case "join request" -> { // User wants to connect to the manager's whiteboard
